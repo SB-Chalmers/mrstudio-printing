@@ -1,0 +1,10 @@
+# Same packages as the setup cell in city_tiles/generate_tiles.ipynb.
+# Keep the dtcc-core commit in sync with DTCC_CORE_COMMIT in the notebook.
+dtcc-core @ git+https://github.com/dtcc-platform/dtcc-core.git@f8ab79b7b589759a7f9279eac576a725f722ed6a
+trimesh
+geopandas
+shapely
+pyproj
+matplotlib
+ipyleaflet
+ipywidgets
