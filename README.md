@@ -33,7 +33,7 @@ The notebook cells are kept short. The code they call lives next to it in `city_
 
 Outputs are STL tile files saved to `processed_tiles/` (created in the notebook working directory) with names `tile_{i}_{j}.stl`, where `i` counts tiles eastward and `j` northward from the south-west corner, starting at 1. Section 7 downloads them as one zip; do this before the Colab session ends.
 
-The options are form fields and the code cells are collapsed to forms, so the notebook can be used without editing code. Double-click a cell to see its code.
+Only the options cell is meant to be edited; the other code cells are collapsed to their titles. Double-click a cell to see its code.
 
 #### 1.1 Options and Setup
 

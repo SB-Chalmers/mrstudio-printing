@@ -71,7 +71,7 @@ The notebook is organized into these sections:
 6. Generate magnet holes
 7. Download results
 
-The options in section 1 are Colab form fields, and the code cells are shown as forms with their code hidden (double-click a cell to see it). Each section has a short instruction above it.
+The options in section 1 are a short code cell; the other code cells are collapsed to their titles (double-click a cell to see its code). Each section has a short instruction above it.
 
 ## 1.5 High-Level Flow
 
