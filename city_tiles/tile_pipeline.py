@@ -8,6 +8,7 @@ notebook then calls one function from this module:
     preview_layout(shapes, opts)         -> Layout (bounds, grid, buildings)
     generate_city_tiles(layout, opts)    -> STL tiles in processed_tiles/
     add_magnet_holes(opts)               -> runs blender_magnet_holes.py
+    download_results()                   -> zip of the results
 
 Install the packages first (tile_setup.setup) before importing this module.
 """
@@ -476,3 +477,32 @@ def add_magnet_holes(opts, blender="blender"):
             sys.stdout.write(line)
     if proc.returncode != 0:
         raise RuntimeError(f"Blender exited with code {proc.returncode}")
+
+
+# --- 10) Download results ----------------------------------------------------
+
+def download_results(opts=None, zip_name="city_tiles.zip"):
+    """Notebook section 7: zip the outputs and download them (on Colab)."""
+    import zipfile
+
+    opts = opts or Options()
+    files = sorted(Path(opts.OUT_DIR).glob("*.stl"))
+    if not files:
+        print(f"No tiles found in {opts.OUT_DIR}/. Run section 5 first.")
+        return None
+    extras = [Path(p) for p in ("layout_preview.png", "raw_city_mesh.stl") if Path(p).exists()]
+
+    with zipfile.ZipFile(zip_name, "w", zipfile.ZIP_DEFLATED) as zf:
+        for f in files:
+            zf.write(f, f"{Path(opts.OUT_DIR).name}/{f.name}")
+        for f in extras:
+            zf.write(f, f.name)
+    print(f"Saved {zip_name}: {len(files)} tile(s) + {', '.join(p.name for p in extras) or 'no extras'}")
+
+    try:
+        from google.colab import files as colab_files
+    except ImportError:
+        print(f"Not on Colab: find the zip at {Path(zip_name).resolve()}")
+    else:
+        colab_files.download(zip_name)
+    return Path(zip_name)

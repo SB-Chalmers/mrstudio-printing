@@ -25,6 +25,7 @@ This document describes the complete workflow for generating and printing modula
     - [1.6.4 Download Buildings and Preview Layout](#164-download-buildings-and-preview-layout)
     - [1.6.5 Generate mesh and process tiles](#165-generate-mesh-and-process-tiles)
     - [1.6.6 Generate magnet holes in Blender](#166-generate-magnet-holes-in-blender)
+    - [1.6.7 Download results](#167-download-results)
   - [1.7 Add higher LOD buildings](#17-add-higher-lod-buildings)
   - [1.8 Keeping up with DTCC updates](#18-keeping-up-with-dtcc-updates)
 - [2. Base structure](#2-base-structure)
@@ -68,6 +69,9 @@ The notebook is organized into these sections:
 4. Download Buildings and Preview Layout
 5. Generate mesh and process tiles
 6. Generate magnet holes
+7. Download results
+
+The options in section 1 are Colab form fields, and the code cells are shown as forms with their code hidden (double-click a cell to see it). Each section has a short instruction above it.
 
 ## 1.5 High-Level Flow
 
@@ -165,6 +169,7 @@ tile_pipeline functions (each takes the options as opts):
   generate_tiles()
   generate_city_tiles()   load_pointcloud + make_terrain_and_buildings + make_mesh + generate_tiles
   add_magnet_holes()      runs blender_magnet_holes.py
+  download_results()      zips processed_tiles/, layout_preview.png and raw_city_mesh.stl
 ```
 
 #### Select area
@@ -360,6 +365,13 @@ for each STL in processed_tiles/:
   union cutters
   subtract cutters with boolean difference
   export processed STL back to processed_tiles/
+```
+
+### 1.6.7 Download results
+
+```text
+zip processed_tiles/, layout_preview.png and raw_city_mesh.stl into city_tiles.zip
+on Colab, download the zip to the browser
 ```
 
 ## 1.7 Add higher LOD buildings

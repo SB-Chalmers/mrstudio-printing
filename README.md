@@ -31,7 +31,9 @@ Open the notebook `city_tiles/generate_tiles.ipynb` in Google Colab with the bad
 
 The notebook cells are kept short. The code they call lives next to it in `city_tiles/`: `tile_pipeline.py` (area selection, meshing and tiling), `tile_setup.py` (package and Blender installation) and `blender_magnet_holes.py` (the Blender script for magnet holes). On Colab the setup cell clones this repository to get them.
 
-Outputs are STL tile files saved to `processed_tiles/` (created in the notebook working directory) with names `tile_{i}_{j}.stl`, where `i` counts tiles eastward and `j` northward from the south-west corner, starting at 1. Download them from the Colab file browser before the session ends.
+Outputs are STL tile files saved to `processed_tiles/` (created in the notebook working directory) with names `tile_{i}_{j}.stl`, where `i` counts tiles eastward and `j` northward from the south-west corner, starting at 1. Section 7 downloads them as one zip; do this before the Colab session ends.
+
+The options are form fields and the code cells are collapsed to forms, so the notebook can be used without editing code. Double-click a cell to see its code.
 
 #### 1.1 Options and Setup
 
@@ -68,6 +70,10 @@ The tiles are extruded to individual depths, snapping to a vertical grid equal t
 #### 1.6 Add magnet holes (Optional)
 
 Run cell 6 to add magnet holes to the city tiles. The existing files in `processed_tiles/` will be updated.
+
+#### 1.7 Download results
+
+Run cell 7 to download `city_tiles.zip` with the tiles, `layout_preview.png` and `raw_city_mesh.stl`.
 
 
 ### 2. Add higher LOD buildings (Optional)
