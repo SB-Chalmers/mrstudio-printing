@@ -119,7 +119,7 @@ def select_area(opts, center=(57.687845516523026, 11.976528661251745), zoom=13):
     Returns a list that fills with GeoJSON features as shapes are drawn.
     """
     import pyproj
-    from ipyleaflet import DrawControl, Map, basemaps
+    from ipyleaflet import DrawControl, LayersControl, Map, basemap_to_tiles, basemaps
     from ipywidgets import Output
     from shapely.geometry import shape
     from shapely.ops import transform as shp_transform
@@ -127,7 +127,14 @@ def select_area(opts, center=(57.687845516523026, 11.976528661251745), zoom=13):
     shapes = []
     output = Output()
 
-    map_widget = Map(basemap=basemaps.OpenStreetMap.Mapnik, center=center, zoom=zoom)
+    # OpenStreetMap's own tile server blocks requests from Colab ("Access
+    # blocked"), so use Esri tiles, which need no key. Satellite is a second layer.
+    map_widget = Map(basemap=basemaps.Esri.WorldStreetMap, center=center, zoom=zoom)
+    satellite = basemap_to_tiles(basemaps.Esri.WorldImagery)
+    satellite.base = True
+    satellite.name = "Satellite"
+    map_widget.add(satellite)
+    map_widget.add(LayersControl(position="topright"))
     map_widget.layout.width = "1000px"
     map_widget.layout.height = "600px"
 
