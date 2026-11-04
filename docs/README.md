@@ -25,6 +25,7 @@ This document describes the complete workflow for generating and printing modula
     - [1.6.4 Download Buildings and Preview Layout](#164-download-buildings-and-preview-layout)
     - [1.6.5 Generate mesh and process tiles](#165-generate-mesh-and-process-tiles)
     - [1.6.6 Generate magnet holes in Blender](#166-generate-magnet-holes-in-blender)
+    - [1.6.7 Download results](#167-download-results)
   - [1.7 Add higher LOD buildings](#17-add-higher-lod-buildings)
   - [1.8 Keeping up with DTCC updates](#18-keeping-up-with-dtcc-updates)
 - [2. Base structure](#2-base-structure)
@@ -68,6 +69,9 @@ The notebook is organized into these sections:
 4. Download Buildings and Preview Layout
 5. Generate mesh and process tiles
 6. Generate magnet holes
+7. Download results
+
+The options in section 1 are a short code cell; the other code cells are collapsed to their titles (double-click a cell to see its code). Each section has a short instruction above it.
 
 ## 1.5 High-Level Flow
 
@@ -121,33 +125,51 @@ define BUILDING_MARGIN, the extra area meshed around the model so buildings cros
 
 ### 1.6.2 Setup dependencies and helper functions
 
+The notebook cells only call functions. The code lives next to the notebook in `city_tiles/`:
+
+- `tile_setup.py`: installs the Python packages and Blender
+- `tile_pipeline.py`: the processing functions described below, and the `Options` that hold the settings from section 1
+- `blender_magnet_holes.py`: the Blender script run in section 6
+
+On Colab, where only the notebook is opened, the setup cell clones this repository (branch `REPO_BRANCH`, default `main`) to get these files. Run locally from `city_tiles/`, it uses the files in place.
+
 ```text
-install required Python packages
-  dtcc-core is installed from GitHub at the commit DTCC_CORE_COMMIT
-import dtcc_core, geopandas, trimesh, plotting and widget tools
-ensure Blender is available on PATH (auto-install logic for Linux/Colab)
+if tile_pipeline.py is not in the working directory:
+  clone the repository and add its city_tiles/ folder to the Python path
 
-define terrain and meshing settings
-define footprint processing settings (merge distance, minimum area, minimum height)
+tile_setup.setup(DTCC_CORE_COMMIT):
+  install missing Python packages
+    dtcc-core is installed from GitHub at the commit DTCC_CORE_COMMIT
+  ensure Blender is available on PATH (auto-install logic for Linux/Colab)
+  create output directories:
+    raw_tiles/
+    processed_tiles/
+  create optional input directory (used only when ALIGN=True):
+    old_meshes/
 
-create output directories:
-  raw_tiles/
-  processed_tiles/
+import tile_pipeline as tp
 
-create optional input directory (used only when ALIGN=True):
-  old_meshes/
+tile_pipeline.Options holds every setting:
+  the options from section 1, read with Options.from_namespace(globals())
+  terrain and meshing settings (RASTER_CELL_SIZE, MAX_MESH_SIZE, SMOOTHING, ...)
+  footprint processing settings (MERGE_MAX_DIST, MERGE_MIN_AREA, MIN_HEIGHT)
+  any of these can be overridden by setting a variable of the same name in section 1
 
-define helper functions:
+tile_pipeline functions (each takes the options as opts):
   select_area()
   convert_geojson()
   compute_bounds()
   mesh_bounds()
   get_footprint()
   load_buildings()
+  preview_layout()        convert_geojson + compute_bounds + load_buildings
   load_pointcloud()
   make_terrain_and_buildings()
   make_mesh()
   generate_tiles()
+  generate_city_tiles()   load_pointcloud + make_terrain_and_buildings + make_mesh + generate_tiles
+  add_magnet_holes()      runs blender_magnet_holes.py
+  download_results()      zips processed_tiles/, layout_preview.png and raw_city_mesh.stl
 ```
 
 #### Select area
@@ -156,7 +178,7 @@ define helper functions:
 select_area()
 
   define interactive map where shapes can be drawn
-  append drawn GeoJSON shapes to list 'BOUNDARY_GEOJSON'
+  return a list that drawn GeoJSON shapes are appended to (stored as 'BOUNDARY_GEOJSON')
 ```
 
 #### Convert GeoJSON
@@ -305,22 +327,23 @@ generate_tiles()
 ### 1.6.3 Area Selection
 
 ```
-reset BOUNDARY_GEOJSON
-call select_area function to activate interactive map
+read the options from section 1 into opts
+  (re-run from this section after changing any option)
+call select_area to activate interactive map; it returns a new, empty BOUNDARY_GEOJSON
 map reports each drawn shape's width, height, and area
 ```
 
 ### 1.6.4 Download Buildings and Preview Layout
 
 ```
-call helper functions to download buildings and plot preview of the layout, including the tile grid and model dimensions
+call preview_layout to download buildings and plot preview of the layout, including the tile grid and model dimensions
 preview image is saved as layout_preview.png
 ```
 
 ### 1.6.5 Generate mesh and process tiles
 
 ```
-call helper functions to generate and save tiled mesh
+call generate_city_tiles to generate and save tiled mesh
 
 raw mesh (cut to model bounds) is saved as raw_city_mesh.stl
 raw tiles are saved to raw_tiles/
@@ -330,8 +353,7 @@ extruded tiles are saved to processed_tiles/
 ### 1.6.6 Generate magnet holes in Blender
 
 ```text
-write embedded Blender Python script to blender_script.py
-run blender in headless mode
+call add_magnet_holes, which runs city_tiles/blender_magnet_holes.py in headless Blender
 
 for each STL in processed_tiles/:
   import tile
@@ -343,6 +365,13 @@ for each STL in processed_tiles/:
   union cutters
   subtract cutters with boolean difference
   export processed STL back to processed_tiles/
+```
+
+### 1.6.7 Download results
+
+```text
+zip processed_tiles/, layout_preview.png and raw_city_mesh.stl into city_tiles.zip
+on Colab, download the zip to the browser
 ```
 
 ## 1.7 Add higher LOD buildings

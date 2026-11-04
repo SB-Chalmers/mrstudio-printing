@@ -12,7 +12,7 @@ The goal is to create a physical table surface with scaled, magnetized city tile
 ## Repository Structure
 ```
 mrstudio-printing/
-├─ city_tiles/            # Tile-generation notebook and related assets
+├─ city_tiles/            # Tile-generation notebook and its helper code
 ├─ base_tiles/            # Base geometry files
 ├─ media/                 # Images used in documentation
 ├─ docs/                  # Additional documentation
@@ -27,13 +27,17 @@ mrstudio-printing/
 This section provides an overview of the printing pipeline. For a more detailed walkthrough, see `docs/README.md`.
 
 ### 1. Generate Tile Geometry
-Open the notebook `city_tiles/generate_tiles.ipynb` in Google Colab with the badge above (or [this link](https://colab.research.google.com/github/SB-Chalmers/mrstudio-printing/blob/main/city_tiles/generate_tiles.ipynb)) to prepare terrain/building tile geometry and export meshes for printing. It opens directly from GitHub, so nothing needs to be downloaded or uploaded. If the repository is private, Colab will ask you to sign in with a GitHub account that has access.
+Open the notebook `city_tiles/generate_tiles.ipynb` in Google Colab with the badge above (or [this link](https://colab.research.google.com/github/SB-Chalmers/mrstudio-printing/blob/main/city_tiles/generate_tiles.ipynb)) to prepare terrain/building tile geometry and export meshes for printing. It opens directly from GitHub, so nothing needs to be downloaded or uploaded.
 
-Outputs are STL tile files saved to `processed_tiles/` (created in the notebook working directory) with names `tile_{i}_{j}.stl`, where `i` counts tiles eastward and `j` northward from the south-west corner, starting at 1. Download them from the Colab file browser before the session ends.
+The notebook cells are kept short. The code they call lives next to it in `city_tiles/`: `tile_pipeline.py` (area selection, meshing and tiling), `tile_setup.py` (package and Blender installation) and `blender_magnet_holes.py` (the Blender script for magnet holes). On Colab the setup cell clones this repository to get them.
+
+Outputs are STL tile files saved to `processed_tiles/` (created in the notebook working directory) with names `tile_{i}_{j}.stl`, where `i` counts tiles eastward and `j` northward from the south-west corner, starting at 1. Section 7 downloads them as one zip; do this before the Colab session ends.
+
+Only the options cell is meant to be edited; the other code cells are collapsed to their titles. Double-click a cell to see its code.
 
 #### 1.1 Options and Setup
 
-Run sections 1 and 2 to set parameters and install the necessary packages. Any changes to the default options can be made in section 1.
+Run sections 1 and 2 to set parameters and install the necessary packages. Any changes to the default options can be made in section 1. Section 3 reads the options, so re-run from section 3 after changing them.
 
 #### 1.2 Upload old meshes for boundary matching (Optional)
 
@@ -66,6 +70,10 @@ The tiles are extruded to individual depths, snapping to a vertical grid equal t
 #### 1.6 Add magnet holes (Optional)
 
 Run cell 6 to add magnet holes to the city tiles. The existing files in `processed_tiles/` will be updated.
+
+#### 1.7 Download results
+
+Run cell 7 to download `city_tiles.zip` with the tiles, `layout_preview.png` and `raw_city_mesh.stl`.
 
 
 ### 2. Add higher LOD buildings (Optional)
